@@ -1,12 +1,7 @@
 # Welcome to the dynamo-discord-bot!
 
-Dynamo is a powerful and innovative discord bot that is focused on providing an unparalleled advertising experience for discord users. It is currently in beta and is available for users to test and provide feedback.
-
 ## Features
 
-- Personalized and targeted advertising campaigns
-- Detailed analytics and metrics on the performance of advertisements
-- User-friendly interface for creating and managing advertising campaigns
 - Data privacy and security
 - Open-source
 
