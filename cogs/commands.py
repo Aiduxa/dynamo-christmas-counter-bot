@@ -39,6 +39,8 @@ class Commands(Cog):
 
         msg = await channel.send("This message will be updated. Stay tuned.")
 
+        await msg.pin(reason="Dynamo's daily counter until christmas")
+
         await serverDH.update(inter.guild.id, "christmas_countdown_message_id", msg.id)
 
         vars = {
