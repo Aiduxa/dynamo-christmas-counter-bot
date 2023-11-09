@@ -1,4 +1,4 @@
-__all__ = []
+__all__ = ["userDatabaseHandler", "serverDatabaseHandler"]
 
 from asyncpg.pool import Pool
 from asyncpg import Record
@@ -86,6 +86,6 @@ class serverDatabaseHandler(Database):
 		await self.execute("DELETE FROM servers WHERE id = 1")
 	
 	async def update(self, server_id: int, column: str, new_value: str | int | float | bool | None) -> Server:
-		data: Record = await self.fetchval(f"UPDATE servers SET {column} = $2 WHERE id = $1 RETURNING *", server_id, new_value)
-		return from_dict(Server, dict(data))
+		await self.execute(f"UPDATE servers SET {column} = $2 WHERE id = $1", server_id, new_value)
+		
 	
