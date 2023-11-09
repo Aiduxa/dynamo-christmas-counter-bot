@@ -1,18 +1,7 @@
-__all__ = ['log', 'Color', 'Default', 'ActivityRank', 'Emoji']
+__all__ = ['Color', 'Default', 'Emoji']
 
 
 from datetime import datetime
-
-def log(title: str, message: str, error: bool = False):
-	if error:
-		raise Exception(f"[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}] [{title.upper()}]: {message}")
-
-	margin = ""
-	if len(title) < 8:
-		margin = int(8 - len(title)) * " "
-
-	print(f"[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}] [{title.upper()}{margin}]: {message}")
-
 
 from dataclasses import dataclass, field
 
@@ -30,19 +19,7 @@ class Default:
 	SERVER: D_Object = D_Object(id=1060218266670346370)
 	COLOR: int = Color.NEON
 	FOOTER: str = "Dynamo © 2023"
-	MULTIPLIER: int = 10.0
 	PREFIX: str = "dyn."
-	AD_EMBED_TITLE: str = "CLICK HERE TO JOIN!"
-	USER_COLUMNS: list[str] = field(default_factory=["last_message", "last_day_messages", "activity_rank", "servers"])
-	GUILD_COLUMNS: list[str] = field(default_factory=["activity_power"])
-	FORMAT: str = "%Y-%m-%d %H:%M:%S"
-	CHANNEL: str = "Dynamo's advertisements"
-
-@dataclass
-class ActivityRank:
-	SUPERACTIVE: int = 3.0
-	ACTIVE: int = 1.5
-	ONLINE: int = 1
 
 @dataclass
 class Emoji:
