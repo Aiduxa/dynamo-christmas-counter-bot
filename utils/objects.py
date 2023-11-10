@@ -11,6 +11,7 @@ class Server:
 
     christmas_countdown_channel_id: int | None
     christmas_countdown_message_id: int | None
+    christmas_countdown_enabled: bool
 
     created_at: datetime
 

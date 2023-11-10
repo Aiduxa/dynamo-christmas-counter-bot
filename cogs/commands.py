@@ -4,7 +4,7 @@ from discord.app_commands import command, describe
 from discord import Interaction, TextChannel, Embed, Message
 from requests import get, Response
 
-from utils import serverDatabaseHandler, Default, Color
+from utils import serverDatabaseHandler, Default, Color, Server
 from json import loads
 
 from ast import literal_eval
@@ -33,6 +33,7 @@ class Commands(Cog):
 
         serverDH: serverDatabaseHandler = serverDatabaseHandler(self.bot.POOL)
 
+        # Gets the server data from the database, we don't use it, so we use this as a check. If it doesn't exist in the database it will create it
         await serverDH.get(inter.guild.id)
 
         await serverDH.update(inter.guild.id, "christmas_countdown_channel_id", channel.id)
@@ -51,6 +52,31 @@ class Commands(Cog):
         embed.set_footer(text=Default.FOOTER, icon_url=self.bot.user.avatar.url)
 
         await inter.edit_original_response(embed=embed)
+
+    # Sets christmas countdown enabled status
+    @command(name="christmas_countdown")
+    async def christmas_countdown_enabled_command(self, inter: Interaction, status: bool) -> None:
+
+        await inter.response.defer(ephemeral=True)
+
+        serverDH: serverDatabaseHandler = serverDatabaseHandler(self.bot.POOL)
+
+        # Gets the server data from the database, we don't use it, so we use this as a check. If it doesn't exist in the database it will create it
+        await serverDH.get(inter.guild.id)
+
+        await serverDH.update(inter.guild.id, "christmas_countdown_enabled", status)
+
+        embed: Embed = Embed(
+            title="✅ Christmas countdown has been successfully updated!",
+            description=f"- Countdown has been ``{'Enabled' if status else 'Disabled'}``.",
+            color=Color.GREEN
+        )
+        embed.set_footer(text=Default.FOOTER, icon_url=self.bot.user.avatar.url)
+
+        await inter.edit_original_response(embed=embed)
+        
+
+
 
     # Returns a joke
     @command(name="joke", description="Dynamo tells you a christmas themed joke.")

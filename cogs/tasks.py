@@ -7,7 +7,7 @@ from utils import serverDatabaseHandler, Server, Color, Default
 from aiohttp import ClientSession
 from json import loads
 
-def create_progress_bar(percentage, length=20):
+def create_progress_bar(percentage, length=12):
     progress = int(length * percentage / 100)
     bar = "🟦" * progress + "⬜" * (length - progress)
     return bar
@@ -29,50 +29,57 @@ class Tasks(Cog):
 
         for server in servers:
 
+            # Checks if bot is still in guild, if not it deletes it from the database
             if not await self.bot.fetch_guild(server.id):
                 await serverDH.delete(server.id)
                 continue
-
+            
+            if not server.christmas_countdown_enabled:
+                continue
+                
             guild: Guild = await self.bot.fetch_guild(server.id)
 
+            # If channel was not set, it the loop continues
             if not await guild.fetch_channel(server.christmas_countdown_channel_id):
                 continue
 
             channel: TextChannel = await guild.fetch_channel(server.christmas_countdown_channel_id)
 
+            # If message was deleted or some how gone, it will just send a new one.
             if not await channel.fetch_message(server.christmas_countdown_message_id):
                 msg: Message = await channel.send("This will update... Stay tuned...")
                 server.christmas_countdown_message_id = msg.id
                 await serverDH.update(server.id, "christmas_countdown_message_id", msg.id)
                 continue
 
-            messageable: Message = await channel.fetch_message(server.christmas_countdown_message_id)
+            message: Message = await channel.fetch_message(server.christmas_countdown_message_id)
 
             async with ClientSession() as sesh:
                 async with sesh.get("https://christmascountdown.live/api/timeleft/total") as resp:
-
+                    # Gets the time left until christmas in dict
                     timeleft: dict = loads(str(await resp.text()))
 
                 async with sesh.get("https://christmascountdown.live/api/percentage") as resp:
-
+                    # Gets the percentage of time left until christmas in float
                     percentage: float = float(await resp.text())
 
                 async with sesh.get("https://christmascountdown.live/api/is-tomorrow") as resp:
-
+                    # Gets a bool that indicates if it's christmas eve
                     christmas_eve: bool = loads(await resp.text())
 
                 async with sesh.get("https://christmascountdown.live/api/is-today") as resp:
-
+                    # Gets a bool that indicates if it's christmas
                     christmas: bool = loads(await resp.text())
 
+            # Big ass embed
             embed: Embed = Embed(
                 title="🎅 Countdown until christmas...",
-                description=f"## 🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩\n{'# Merry Christmas Eve! ⭐🎄' if christmas_eve else ''}{'# Merry Christmas! 🎅🎄' if christmas else ''}\n{'### 🕒 ``{}``'.format(timeleft['days']) if timeleft.get('days') and not christmas else ''}{' **{}** '.format('days' if int(timeleft.get('days')) > 1 else 'day') if timeleft.get('days') and not christmas else ''}{'``{}``'.format(timeleft['hours']) if timeleft.get('hours') and not christmas else ''}{' **{}** '.format('hours' if int(timeleft.get('hours')) > 1 else 'hour') if timeleft.get('hours') and not christmas else ''}{'``{}``'.format(timeleft['minutes']) if timeleft.get('minutes') and not christmas else ''}{' **{}** '.format('minutes' if int(timeleft.get('minutes')) > 1 else 'minute') if timeleft.get('minutes') and not christmas else ''}{'``{}``'.format(timeleft['seconds']) if timeleft.get('seconds') and not christmas else ''}{' **{}** '.format('seconds' if int(timeleft.get('seconds')) > 1 else 'second') if timeleft.get('seconds') and not christmas else ''} {'until the magical {}!'.format('days' if int(timeleft.get('days')) > 1 else 'day') if not christmas else ''}\n### ⭐ Progress\n- {'**{}**'.format(round(percentage, 2)) if percentage >= 100.0 else round(percentage, 2)}%** / 100%**\n{create_progress_bar(percentage)}\n## 🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩",
+                description=f"## 🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩\n{'# Merry Christmas Eve! ⭐🎄' if christmas_eve else ''}{'# Merry Christmas! 🎅🎄' if christmas else ''}\n{'### 🕒 ``{}``'.format(timeleft['days']) if timeleft.get('days') and not christmas else ''}{' **{}** '.format('days' if int(timeleft.get('days')) > 1 else 'day') if timeleft.get('days') and not christmas else ''}{'``{}``'.format(timeleft['hours']) if timeleft.get('hours') and not christmas else ''}{' **{}** '.format('hours' if int(timeleft.get('hours')) > 1 else 'hour') if timeleft.get('hours') and not christmas else ''}{'``{}``'.format(timeleft['minutes']) if timeleft.get('minutes') and not christmas else ''}{' **{}** '.format('minutes' if int(timeleft.get('minutes')) > 1 else 'minute') if timeleft.get('minutes') and not christmas else ''}{'``{}``'.format(timeleft['seconds']) if timeleft.get('seconds') and not christmas else ''}{' **{}** '.format('seconds' if int(timeleft.get('seconds')) > 1 else 'second') if timeleft.get('seconds') and not christmas else ''}\n### ⭐ Progress\n- {'**{}**'.format(round(percentage, 2)) if percentage >= 100.0 else round(percentage, 2)}%** / 100%**\n{create_progress_bar(percentage)}\n## 🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩",
                 color=Color.GREEN
             )
             embed.set_footer(text=Default.FOOTER, icon_url=self.bot.user.avatar.url)
 
-            await messageable.edit(content=None, embed=embed)
+            await message.edit(content=None, embed=embed)
 
 
 
