@@ -71,10 +71,38 @@ class Tasks(Cog):
                     # Gets a bool that indicates if it's christmas
                     christmas: bool = loads(await resp.text())
 
+            line: str = "🟥🟩" * 6
+            heading2: str = "## "
+            heading3: str = "### "
+
+
+            if timeleft.get("days") and not christmas:
+                days: str = f"``{timeleft['days']}`` {'**{}**'.format('days' if int(timeleft.get('days')) > 1 else 'day')}"
+            if timeleft.get("hours") and not christmas:
+                hours: str = f"``{timeleft['hours']}`` {'**{}**'.format('hours' if int(timeleft.get('hours')) > 1 else 'hour')}"
+            if timeleft.get("minutes") and not christmas:
+                minutes: str = f"``{timeleft['minutes']}`` {'**{}**'.format('minutes' if int(timeleft.get('minutes')) > 1 else 'minutes')}"
+            if timeleft.get("seconds") and not christmas:
+                seconds: str = f"``{timeleft['seconds']}`` {'**{}**'.format('seconds' if int(timeleft.get('seconds')) > 1 else 'seconds')}"
+            time: str = " ".join(["### 🕒", days, hours, minutes, seconds])
+
+            percentage_progress: str = f"- {round(percentage)}% **/ 100%**"
+
+            progress: str = "\n".join([f"{heading3}⭐ Progress", percentage_progress, create_progress_bar(percentage)])
+
+
+            if christmas:
+                time: str = "# Merry Christmas! 🎅🎄"
+            elif christmas_eve:
+                time: str = f"# Merry Christmas Eve! ⭐🎄\n{time}"
+            
+
+            description: str = "\n".join([heading2, line, time, progress, heading2, line])
+
             # Big ass embed
             embed: Embed = Embed(
                 title="🎅 Countdown until christmas...",
-                description=f"## 🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩\n{'# Merry Christmas Eve! ⭐🎄' if christmas_eve else ''}{'# Merry Christmas! 🎅🎄' if christmas else ''}\n{'### 🕒 ``{}``'.format(timeleft['days']) if timeleft.get('days') and not christmas else ''}{' **{}** '.format('days' if int(timeleft.get('days')) > 1 else 'day') if timeleft.get('days') and not christmas else ''}{'``{}``'.format(timeleft['hours']) if timeleft.get('hours') and not christmas else ''}{' **{}** '.format('hours' if int(timeleft.get('hours')) > 1 else 'hour') if timeleft.get('hours') and not christmas else ''}{'``{}``'.format(timeleft['minutes']) if timeleft.get('minutes') and not christmas else ''}{' **{}** '.format('minutes' if int(timeleft.get('minutes')) > 1 else 'minute') if timeleft.get('minutes') and not christmas else ''}{'``{}``'.format(timeleft['seconds']) if timeleft.get('seconds') and not christmas else ''}{' **{}** '.format('seconds' if int(timeleft.get('seconds')) > 1 else 'second') if timeleft.get('seconds') and not christmas else ''}\n### ⭐ Progress\n- {'**{}**'.format(round(percentage, 2)) if percentage >= 100.0 else round(percentage, 2)}%** / 100%**\n{create_progress_bar(percentage)}\n## 🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩",
+                description=description,
                 color=Color.GREEN
             )
             embed.set_footer(text=Default.FOOTER, icon_url=self.bot.user.avatar.url)
