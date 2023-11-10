@@ -82,7 +82,5 @@ class Tasks(Cog):
             await message.edit(content=None, embed=embed)
 
 
-
-
 async def setup(bot: Bot) -> None:
     await bot.add_cog(Tasks(bot))

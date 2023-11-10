@@ -33,7 +33,7 @@ class Dynamo(Bot):
 	
 	@loop(seconds=30.0)
 	async def continous_handler(self) -> None:
-		await self.change_presence(activity=Activity(name=f"{len(self.users)} members | /help", type=ActivityType.watching))
+		await self.change_presence(activity=Activity(name=f"{'{:,}'.format(len(self.users))} members | /help", type=ActivityType.watching))
 
 	@continous_handler.before_loop
 	async def before_continous_handler(self) -> None:
