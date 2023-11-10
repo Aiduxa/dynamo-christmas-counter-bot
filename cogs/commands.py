@@ -1,5 +1,6 @@
 from discord.ext.commands import Cog, Bot
-from discord.app_commands import command, describe
+from discord.app_commands import command, describe, guild_only
+from discord.app_commands.checks import has_permissions
 
 from discord import Interaction, TextChannel, Embed, Message
 from requests import get, Response
@@ -17,17 +18,10 @@ class Commands(Cog):
 
     # Sets the countdown channel
     @describe(channel="The channel you want countdown to take part in.")
+    @has_permissions(administrator=True)
+    @guild_only()
     @command(name="set_countdown_channel", description="Configure Dynamo's countdown channel in your server.")
     async def set_countdown_channel_command(self, inter: Interaction, channel: TextChannel):
-
-        """
-        
-        Permission check has to be added - check if the user running the command has manage_guild permissions or is owner
-
-        Check if bot has manage_messages, send_messages, use_application_commands
-        
-        
-        """
 
         await inter.response.defer(ephemeral=True)
 
@@ -55,7 +49,9 @@ class Commands(Cog):
 
     # Sets christmas countdown enabled status
     @describe(status="True means enabled, otherwise False means disabled.")
-    @command(name="christmas_countdown", description="Configure Dynamo's countdown status.")
+    @has_permissions(administrator=True)
+    @guild_only()
+    @command(name="enable_christmas_countdown", description="Configure Dynamo's countdown status.")
     async def christmas_countdown_enabled_command(self, inter: Interaction, status: bool) -> None:
 
         await inter.response.defer(ephemeral=True)
@@ -81,6 +77,7 @@ class Commands(Cog):
 
     # Returns a joke
     @command(name="joke", description="Dynamo tells you a christmas themed joke.")
+    @guild_only()
     async def joke_command(self, inter: Interaction):
         
         raw_joke: Response = get("https://christmascountdown.live/api/joke")
