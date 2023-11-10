@@ -54,7 +54,8 @@ class Commands(Cog):
         await inter.edit_original_response(embed=embed)
 
     # Sets christmas countdown enabled status
-    @command(name="christmas_countdown")
+    @describe(status="True means enabled, otherwise False means disabled.")
+    @command(name="christmas_countdown", description="Configure Dynamo's countdown status.")
     async def christmas_countdown_enabled_command(self, inter: Interaction, status: bool) -> None:
 
         await inter.response.defer(ephemeral=True)
