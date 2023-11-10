@@ -81,6 +81,10 @@ class serverDatabaseHandler(Database):
 			await self.create(server_id=server_id)
 			data: Record = await self.fetchrow("SELECT * FROM servers WHERE id = $1", server_id)
 		return from_dict(Server, dict(data))
+	
+	async def getAll(self) -> list[Server]:
+		data: list[Record] = await self.fetch("SELECT * FROM servers WHERE christmas_countdown_channel_id IS NOT NULL AND christmas_countdown_message_id IS NOT NULL")
+		return [from_dict(Server, dict(server)) for server in data]
 
 	async def delete(self, server_id: int) -> None:
 		await self.execute("DELETE FROM servers WHERE id = 1")
