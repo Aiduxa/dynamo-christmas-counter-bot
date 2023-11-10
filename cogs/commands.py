@@ -15,13 +15,12 @@ class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot: Bot = bot
 
-
     # Sets the countdown channel
     @describe(channel="The channel you want countdown to take part in.")
     @has_permissions(administrator=True)
     @guild_only()
     @command(name="set_countdown_channel", description="Configure Dynamo's countdown channel in your server.")
-    async def set_countdown_channel_command(self, inter: Interaction, channel: TextChannel):
+    async def set_countdown_channel_command(self, inter: Interaction, channel: TextChannel) -> None:
 
         await inter.response.defer(ephemeral=True)
 
@@ -71,14 +70,11 @@ class Commands(Cog):
         embed.set_footer(text=Default.FOOTER, icon_url=self.bot.user.avatar.url)
 
         await inter.edit_original_response(embed=embed)
-        
-
-
 
     # Returns a joke
     @command(name="joke", description="Dynamo tells you a christmas themed joke.")
     @guild_only()
-    async def joke_command(self, inter: Interaction):
+    async def joke_command(self, inter: Interaction) -> None:
         
         raw_joke: Response = get("https://christmascountdown.live/api/joke")
 

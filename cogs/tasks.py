@@ -48,7 +48,7 @@ class Tasks(Cog):
             # If message was deleted or some how gone, it will just send a new one.
             if not await channel.fetch_message(server.christmas_countdown_message_id):
                 msg: Message = await channel.send("This will update... Stay tuned...")
-                server.christmas_countdown_message_id = msg.id
+                server.christmas_countdown_message_id: int = msg.id
                 await serverDH.update(server.id, "christmas_countdown_message_id", msg.id)
                 continue
 
