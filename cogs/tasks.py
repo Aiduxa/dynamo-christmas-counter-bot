@@ -2,7 +2,7 @@ from discord.ext.commands import Cog, Bot
 from discord.ext.tasks import loop
 from discord import TextChannel, Message, Embed, Guild
 
-from utils import serverDatabaseHandler, Server, Color
+from utils import serverDatabaseHandler, Server, Color, Default
 
 from aiohttp import ClientSession
 from json import loads
@@ -67,9 +67,10 @@ class Tasks(Cog):
 
             embed: Embed = Embed(
                 title="🎅 Countdown until christmas...",
-                description=f"## 🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩\n{'# Merry Christmas Eve! ⭐🎄' if christmas_eve else ''}{'# Merry Christmas! 🎅🎄' if christmas else ''}\n{'### ``{}``'.format(timeleft['days']) if timeleft.get('days') and not christmas else ''}{' **{}** '.format('days' if int(timeleft.get('days')) > 1 else 'day') if timeleft.get('days') and not christmas else ''}{'``{}``'.format(timeleft['minutes']) if timeleft.get('minutes') and not christmas else ''}{' **{}** '.format('minutes' if int(timeleft.get('minutes')) > 1 else 'minute') if timeleft.get('minutes') and not christmas else ''}{'``{}``'.format(timeleft['seconds']) if timeleft.get('seconds') and not christmas else ''}{' **{}** '.format('seconds' if int(timeleft.get('seconds')) > 1 else 'second') if timeleft.get('seconds') and not christmas else ''} {'until the magical {}!'.format('days' if int(timeleft.get('days')) > 1 else 'day') if not christmas else ''}\n### ⭐ Progress\n- {'**{}**'.format(round(percentage, 2)) if percentage >= 100.0 else round(percentage, 2)}%** / 100%**\n{create_progress_bar(percentage)}\n## 🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩",
+                description=f"## 🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩\n{'# Merry Christmas Eve! ⭐🎄' if christmas_eve else ''}{'# Merry Christmas! 🎅🎄' if christmas else ''}\n{'### 🕒 ``{}``'.format(timeleft['days']) if timeleft.get('days') and not christmas else ''}{' **{}** '.format('days' if int(timeleft.get('days')) > 1 else 'day') if timeleft.get('days') and not christmas else ''}{'``{}``'.format(timeleft['hours']) if timeleft.get('hours') and not christmas else ''}{' **{}** '.format('hours' if int(timeleft.get('hours')) > 1 else 'hour') if timeleft.get('hours') and not christmas else ''}{'``{}``'.format(timeleft['minutes']) if timeleft.get('minutes') and not christmas else ''}{' **{}** '.format('minutes' if int(timeleft.get('minutes')) > 1 else 'minute') if timeleft.get('minutes') and not christmas else ''}{'``{}``'.format(timeleft['seconds']) if timeleft.get('seconds') and not christmas else ''}{' **{}** '.format('seconds' if int(timeleft.get('seconds')) > 1 else 'second') if timeleft.get('seconds') and not christmas else ''} {'until the magical {}!'.format('days' if int(timeleft.get('days')) > 1 else 'day') if not christmas else ''}\n### ⭐ Progress\n- {'**{}**'.format(round(percentage, 2)) if percentage >= 100.0 else round(percentage, 2)}%** / 100%**\n{create_progress_bar(percentage)}\n## 🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩🟥🟩",
                 color=Color.GREEN
             )
+            embed.set_footer(text=Default.FOOTER, icon_url=self.bot.user.avatar.url)
 
             await messageable.edit(content=None, embed=embed)
 
