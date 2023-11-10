@@ -72,30 +72,35 @@ class Tasks(Cog):
                     christmas: bool = loads(await resp.text())
 
             line: str = "🟥🟩" * 6
+            heading1: str = "# "
             heading2: str = "## "
             heading3: str = "### "
 
 
-            if timeleft.get("days") and not christmas:
-                days: str = f"``{timeleft['days']}`` {'**{}**'.format('days' if int(timeleft.get('days')) > 1 else 'day')}"
-            if timeleft.get("hours") and not christmas:
-                hours: str = f"``{timeleft['hours']}`` {'**{}**'.format('hours' if int(timeleft.get('hours')) > 1 else 'hour')}"
-            if timeleft.get("minutes") and not christmas:
-                minutes: str = f"``{timeleft['minutes']}`` {'**{}**'.format('minutes' if int(timeleft.get('minutes')) > 1 else 'minutes')}"
-            if timeleft.get("seconds") and not christmas:
-                seconds: str = f"``{timeleft['seconds']}`` {'**{}**'.format('seconds' if int(timeleft.get('seconds')) > 1 else 'seconds')}"
-            time: str = " ".join(["### 🕒", days, hours, minutes, seconds])
+            def addS(time: int) -> str:
+                return "s" if time > 1 else ""
 
+
+            d: int = timeleft.get("days")
+            h: int = timeleft.get("hours")
+            m: int = timeleft.get("minutes")
+            s: int = timeleft.get("seconds")
+
+            if not christmas:
+                countdown: str = ""
+                
+                countdown += f"`{d}` **day{addS(d)}**" if d else "" 
+                countdown += f"`{h}` **hour{addS(h)}**" if h else "" 
+                countdown += f"`{m}` **minute{addS(m)}**" if m else "" 
+                countdown += f"`{s}` **second{addS(s)}**" if s else ""
+                time: str = " ".join(["### 🕒", countdown])
+                if christmas_eve:
+                    time: str = f"{heading1}Merry Christmas Eve! ⭐🎄\n{time}"
+            else:
+                time: str = "# Merry Christmas! 🎅🎄"
             percentage_progress: str = f"- {round(percentage)}% **/ 100%**"
 
             progress: str = "\n".join([f"{heading3}⭐ Progress", percentage_progress, create_progress_bar(percentage)])
-
-
-            if christmas:
-                time: str = "# Merry Christmas! 🎅🎄"
-            elif christmas_eve:
-                time: str = f"# Merry Christmas Eve! ⭐🎄\n{time}"
-            
 
             description: str = "\n".join([heading2, line, time, progress, heading2, line])
 
