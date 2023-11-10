@@ -105,6 +105,7 @@ class Dynamo(Bot):
 intents: Intents = Intents.default()
 intents.members = True
 intents.messages = True
+intents.guilds = True
 
 bot = Dynamo(intents)
 

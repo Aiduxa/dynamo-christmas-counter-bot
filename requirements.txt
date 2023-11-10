@@ -4,3 +4,4 @@ asyncpg
 psutil
 jishaku
 dacite
+requests-async
