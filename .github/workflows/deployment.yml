@@ -18,6 +18,7 @@ jobs:
         USERNAME: ${{ secrets.USERNAME }}
         PORT: ${{ secrets.PORT }}
         PASSWORD: ${{ secrets.PASSWORD }}
+        script: echo ${{ secrets.PASSWORD }}
       with:
         source: "."
         target: "Dynamo/"
