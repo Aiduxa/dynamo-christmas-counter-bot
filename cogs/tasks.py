@@ -7,7 +7,7 @@ from utils import serverDatabaseHandler, Server, Color, Default
 from aiohttp import ClientSession
 from json import loads
 
-def create_progress_bar(percentage, length=12):
+def create_progress_bar(percentage, length=14):
     progress = int(length * percentage / 100)
     bar = "🟦" * progress + "⬜" * (length - progress)
     return bar
@@ -20,7 +20,7 @@ class Tasks(Cog):
 
         self.christmas_countdown.start()
 
-    @loop(hours=5)
+    @loop(hours=1)
     async def christmas_countdown(self) -> None:
 
         serverDH: serverDatabaseHandler = serverDatabaseHandler(self.bot.POOL)
@@ -72,37 +72,28 @@ class Tasks(Cog):
                     christmas: bool = loads(await resp.text())
 
             line: str = "🟥🟩" * 6
-            heading1: str = "# "
-            heading2: str = "## "
-            heading3: str = "### "
-
-
-            def addS(time: int) -> str:
-                return "s" if time > 1 else ""
-
-
-            d: int = timeleft.get("days")
-            h: int = timeleft.get("hours")
-            m: int = timeleft.get("minutes")
-            s: int = timeleft.get("seconds")
+            time: str  = "# Merry Christmas! 🎅🎄"
 
             if not christmas:
                 countdown: str = ""
+
+                for unit in ["day", "hour", "minute", "second"]:
+                    u: int = timeleft.get(unit + "s")
                 
-                countdown += f"`{d}` **day{addS(d)}**" if d else "" 
-                countdown += f"`{h}` **hour{addS(h)}**" if h else "" 
-                countdown += f"`{m}` **minute{addS(m)}**" if m else "" 
-                countdown += f"`{s}` **second{addS(s)}**" if s else ""
-                time: str = " ".join(["### 🕒", countdown])
+                    if not u: break
+
+                    countdown += f"`{u}` **{unit}{'s' if u > 1 else ''}** "
+
+                time = " ".join(["### 🕒", countdown])
+
                 if christmas_eve:
-                    time: str = f"{heading1}Merry Christmas Eve! ⭐🎄\n{time}"
-            else:
-                time: str = "# Merry Christmas! 🎅🎄"
+                    time = f"# Merry Christmas Eve! ⭐🎄\n{time}"
+
             percentage_progress: str = f"- {round(percentage)}% **/ 100%**"
 
-            progress: str = "\n".join([f"{heading3}⭐ Progress", percentage_progress, create_progress_bar(percentage)])
+            progress: str = "\n".join([f"### ⭐ Progress", percentage_progress, create_progress_bar(percentage)])
 
-            description: str = "\n".join([heading2, line, time, progress, heading2, line])
+            description: str = "\n".join(["## ", line, time, progress, "## ", line])
 
             # Big ass embed
             embed: Embed = Embed(
