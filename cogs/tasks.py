@@ -49,8 +49,7 @@ class Tasks(Cog):
 
             try:
                 await channel.fetch_message(server.christmas_countdown_message_id)
-            except Exception as e:
-                print_tb(e)
+            except Exception:
                 continue
 
             # If message was deleted or some how gone, it will just send a new one.
@@ -87,8 +86,6 @@ class Tasks(Cog):
 
                 for unit in ["day", "hour", "minute", "second"]:
                     u: int = timeleft.get(unit + "s")
-                
-                    if not u: break
 
                     countdown += f"`{u}` **{unit}{'s' if u > 1 else ''}** "
 
