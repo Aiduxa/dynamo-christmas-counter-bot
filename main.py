@@ -29,7 +29,8 @@ class Dynamo(Bot):
 				status=Status.online,
 				intents=intents,
 				application_id=environ.get("app_id"),
-				description="User entertainment bot"
+				description="User entertainment bot",
+				help_command=None
 			)
 
 	
