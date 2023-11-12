@@ -20,5 +20,8 @@ class User:
 
     id: int
 
+    trivia_points: int
+    trivia_ranking: int | None
+
     created_at: datetime
 

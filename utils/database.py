@@ -63,8 +63,15 @@ class userDatabaseHandler(Database):
 		await self.execute("DELETE FROM users WHERE id = 1")
 	
 	async def update(self, user_id: int, column: str, new_value: str | int | float | bool | None) -> User:
-		data: Record = await self.fetchval(f"UPDATE users SET {column} = $2 WHERE id = $1 RETURNING *", user_id, new_value)
-		return from_dict(User, dict(data))
+		data: Record = await self.execute(f"UPDATE users SET {column} = $2 WHERE id = $1", user_id, new_value)
+
+	async def get_trivia_leaderboard(self) -> User:
+		data: list[Record] = await self.fetch("SELECT id, trivia_points, RANK() OVER (ORDER BY trivia_points DESC) as trivia_ranking, created_at FROM users ORDER BY trivia_points DESC")
+		return [from_dict(User, user) for user in data]
+
+	async def get_trivia_ranking(self, user_id: int) -> User:
+		data: Record = await self.fetchrow("SELECT id, trivia_points, RANK() OVER (ORDER BY trivia_points DESC) as trivia_ranking, created_at FROM users WHERE id = $1", user_id)
+		return from_dict(User, data)
 
 class serverDatabaseHandler(Database): 
 

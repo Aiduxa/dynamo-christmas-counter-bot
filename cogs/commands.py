@@ -1,12 +1,14 @@
 from discord.ext.commands import Cog, Bot
 from discord.app_commands import command, describe, guild_only
 from discord.app_commands.checks import has_permissions, bot_has_permissions
-
-from discord import Interaction, TextChannel, Embed, Message, Permissions
+from discord.utils import format_dt
+from discord import Interaction, TextChannel, Embed, Message, Permissions, InteractionMessage
 from requests import get, Response
 
-from utils import serverDatabaseHandler, Default, Color, Server
-from json import loads
+from utils import serverDatabaseHandler, Default, Color, Server, database, ChristmasTriviaJson, userDatabaseHandler, User
+from time import time
+from datetime import datetime
+from asyncio import TimeoutError
 
 from ast import literal_eval
 
@@ -18,7 +20,6 @@ class Commands(Cog):
     # Sets the countdown channel
     @describe(channel="The channel you want countdown to take part in.")
     @has_permissions(manage_guild=True)
-    @bot_has_permissions(manage_messages=True)
     @guild_only()
     @command(name="set_countdown_channel", description="Configure Dynamo's countdown channel in your server.")
     async def set_countdown_channel_command(self, inter: Interaction, channel: TextChannel) -> None:
@@ -108,7 +109,115 @@ class Commands(Cog):
     @command(name="status", description="Dynamo's current status")
     @guild_only()
     async def status_command(self, inter: Interaction):
-        ...
+        
+        await inter.response.defer()
+
+        serverDH: serverDatabaseHandler = serverDatabaseHandler(self.bot.POOL)
+
+        embed: Embed = Embed(
+            title="Dynamo's status",
+            description="Here you can find Dynamo's status",
+            color=Default.COLOR
+        )
+        embed.add_field(
+            name="Latency (Dynamo -> Discord)",
+            value="``{:,}``**ms**".format(round(self.bot.latency * 1000, 2))
+        )
+        embed.add_field(
+            name="Database latency",
+            value="``{:,}``**ms**".format(round(await serverDH.get_db_latency() * 1000, 2))
+        )
+
+        await inter.edit_original_response(embed=embed)
+
+    @command(name="trivia", description="Christmas themed trivia")
+    @guild_only()
+    async def trivia_command(self, inter: Interaction):
+
+        await inter.response.defer()
+
+        XmasTrivia: ChristmasTriviaJson = ChristmasTriviaJson()
+
+        question: dict = XmasTrivia.get_random_question()
+        points: dict = XmasTrivia.get_points()[question["difficulty"]]
+
+        trivia_start: float = time() 
+        trivia_ends_in: float = datetime.fromtimestamp(trivia_start + 30.0)
+
+        embed: Embed = Embed(
+            title="🎅 Christmas trivia",
+            description=f"You can get ``{points}`` points for answering this question\n# Q: {question['question']}\nAnswer: {'``-`` ' * len(question['answer'])}\n\n- Trivia ends {format_dt(trivia_ends_in, 'R')}",
+            color=Color.RED
+        )
+
+        await inter.edit_original_response(embed=embed)
+
+        def check(message: Message):
+            return str(message.content).lower() == str(question["answer"]).lower()
+        
+        try:
+            answer: Message = await self.bot.wait_for('message', timeout=30.0, check=check)
+        except TimeoutError:
+            embed = Embed(
+            title="🎅 Christmas trivia",
+            description=f"Noone answered correctly... ❌",
+            color=Color.RED
+            )
+
+            await inter.edit_original_response(embed=embed)
+        else:
+            userDH: userDatabaseHandler = userDatabaseHandler(self.bot.POOL)
+
+            user: User = await userDH.get(answer.author.id)
+
+            user.trivia_points += points
+
+            await userDH.update(answer.author.id, "trivia_points", user.trivia_points)
+
+            embed = Embed(
+            title="🎅 Christmas trivia",
+            description=f"\n## Q: {question['question']}\nAnswer: {' '.join(list(str(question['answer']).upper()))}\n✔ **Answered by:** {answer.author.mention}",
+            color=Color.GREEN
+            )
+            await inter.edit_original_response(embed=embed)
+
+    @command(name="trivia_leaderboard", description="Shows you leaderboard of Dynamo's christmas themed trivia globally")
+    async def trivia_leaderboard_command(self, inter: Interaction):
+
+        await inter.response.defer()
+
+        userDH: userDatabaseHandler = userDatabaseHandler(self.bot.POOL)
+
+        db_leaderboard: list[User] = await userDH.get_trivia_leaderboard()
+
+        user: User = await userDH.get_trivia_ranking(inter.user.id)
+
+        leaderboard: str = f"**You're at ``#{user.trivia_ranking}`` with ``{'{:,}'.format(user.trivia_points)}`` points**\n# {'🟩🟥' * 6}\n" 
+
+        medals = ['🥇', '🥈', '🥉']
+
+        for i in range(0, min(11, len(db_leaderboard))):
+            user_db = db_leaderboard[i]
+
+            user_discord = self.bot.get_user(user.id)
+
+            leaderboard += f"- {medals[i] if i <= 3 else ''} ``#{user_db.trivia_ranking}`` | {user_discord.global_name} with ``{'{:,}'.format(user_db.trivia_points)}`` points.\n"
+
+        embed: Embed = Embed(
+            title="🎅 Christmas trivia leaderboard",
+            description=leaderboard,
+            color=Default.COLOR
+        )
+        embed.set_footer(
+            text=Default.FOOTER
+        )
+
+        await inter.edit_original_response(embed=embed)
+
+            
+
+
+
 
 async def setup(bot: Bot):
     await bot.add_cog(Commands(bot))
