@@ -6,6 +6,7 @@ from utils import serverDatabaseHandler, Server, Color, Default
 
 from aiohttp import ClientSession
 from json import loads
+from traceback import print_tb
 
 def create_progress_bar(percentage, length=14):
     progress = int(length * percentage / 100)
@@ -48,7 +49,8 @@ class Tasks(Cog):
 
             try:
                 await channel.fetch_message(server.christmas_countdown_message_id)
-            except:
+            except Exception as e:
+                print_tb(e)
                 continue
 
             # If message was deleted or some how gone, it will just send a new one.

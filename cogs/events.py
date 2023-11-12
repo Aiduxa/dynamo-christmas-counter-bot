@@ -31,4 +31,4 @@ class Events(Cog):
         ...
 
 async def setup(bot: Bot):
-    await bot.add_cog(Events(Bot))
+    await bot.add_cog(Events(bot))
