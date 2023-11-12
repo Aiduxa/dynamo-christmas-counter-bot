@@ -2,11 +2,10 @@ from os import environ, getcwd, listdir
 from traceback import print_tb
 from typing import Any, List, Mapping, Optional
 
-from discord import Activity, ActivityType, Status, Intents, Embed
-from discord.ext.commands import Bot, when_mentioned_or, HelpCommand
-from discord.ext.commands.cog import Cog
-from discord.ext.commands.core import Command
+from discord import Activity, ActivityType, Status, Intents, Embed, Interaction
+from discord.ext.commands import Bot, when_mentioned_or
 from discord.ext.tasks import loop
+from discord.app_commands import AppCommandError
 
 from asyncpg.pool import Pool
 from asyncpg import create_pool
@@ -102,7 +101,6 @@ class Dynamo(Bot):
 
 		# running background task
 		self.continous_handler.start()
-
 
 intents: Intents = Intents.default()
 intents.members = True

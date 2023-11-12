@@ -146,7 +146,7 @@ class Commands(Cog):
 
         embed: Embed = Embed(
             title="🎅 Christmas trivia",
-            description=f"You can get ``{points}`` points for answering this question\n# Q: {question['question']}\nAnswer: {'``-`` ' * len(question['answer'])}\n\n- Trivia ends {format_dt(trivia_ends_in, 'R')}",
+            description=f"You can get ``{points}`` points for answering this question\n# Q: {question['question']}\nAnswer: {' '.join('`{}`'.format('-' * len(word)) for word in str(question['answer']).split(' '))}\n\n- Trivia ends {format_dt(trivia_ends_in, 'R')}",
             color=Color.RED
         )
 
