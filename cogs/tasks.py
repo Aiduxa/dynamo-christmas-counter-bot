@@ -17,8 +17,8 @@ class Tasks(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot: Bot = bot
-
         self.christmas_countdown.start()
+        
 
     @loop(hours=1)
     async def christmas_countdown(self) -> None:

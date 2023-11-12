@@ -13,6 +13,7 @@ class Color:
 	BLURPLE: int = int("5261f8", 16)
 	GREEN: int = int("77DD77", 16)
 	NEON: int = int("1aff79", 16)
+	RED: int = int("a83232", 16)
 
 @dataclass
 class Default:

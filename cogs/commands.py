@@ -1,8 +1,8 @@
 from discord.ext.commands import Cog, Bot
 from discord.app_commands import command, describe, guild_only
-from discord.app_commands.checks import has_permissions
+from discord.app_commands.checks import has_permissions, bot_has_permissions
 
-from discord import Interaction, TextChannel, Embed, Message
+from discord import Interaction, TextChannel, Embed, Message, Permissions
 from requests import get, Response
 
 from utils import serverDatabaseHandler, Default, Color, Server
@@ -17,12 +17,28 @@ class Commands(Cog):
 
     # Sets the countdown channel
     @describe(channel="The channel you want countdown to take part in.")
-    @has_permissions(administrator=True)
+    @has_permissions(manage_guild=True)
+    @bot_has_permissions(manage_messages=True)
     @guild_only()
     @command(name="set_countdown_channel", description="Configure Dynamo's countdown channel in your server.")
     async def set_countdown_channel_command(self, inter: Interaction, channel: TextChannel) -> None:
 
         await inter.response.defer(ephemeral=True)
+
+        channel_permissions: Permissions = channel.permissions_for(inter.guild.get_member(self.bot.user.id))
+
+        if not channel_permissions.send_messages or not channel_permissions.manage_messages:
+
+            embed = Embed(
+                title="❌ Error",
+                description=f"- I do not have enough permissions in {channel.mention}. I need ``Manage messages`` and ``Send messages`` permissions.",
+                color=Color.RED
+            )
+            embed.set_footer(text=Default.FOOTER)
+
+            await inter.edit_original_response(embed=embed)
+
+            return
 
         serverDH: serverDatabaseHandler = serverDatabaseHandler(self.bot.POOL)
 
@@ -32,7 +48,7 @@ class Commands(Cog):
         await serverDH.update(inter.guild.id, "christmas_countdown_channel_id", channel.id)
 
         msg: Message = await channel.send("This message will be updated. Stay tuned.")
-
+        
         await msg.pin(reason="Dynamo's daily counter until christmas")
 
         await serverDH.update(inter.guild.id, "christmas_countdown_message_id", msg.id)
@@ -48,7 +64,7 @@ class Commands(Cog):
 
     # Sets christmas countdown enabled status
     @describe(status="True means enabled, otherwise False means disabled.")
-    @has_permissions(administrator=True)
+    @has_permissions(manage_guild=True)
     @guild_only()
     @command(name="enable_christmas_countdown", description="Configure Dynamo's countdown status.")
     async def christmas_countdown_enabled_command(self, inter: Interaction, status: bool) -> None:
@@ -88,6 +104,11 @@ class Commands(Cog):
         embed.set_footer(text=Default.FOOTER, icon_url=self.bot.user.avatar.url)
 
         await inter.response.send_message(embed=embed)
+
+    @command(name="status", description="Dynamo's current status")
+    @guild_only()
+    async def status_command(self, inter: Interaction):
+        ...
 
 async def setup(bot: Bot):
     await bot.add_cog(Commands(bot))
