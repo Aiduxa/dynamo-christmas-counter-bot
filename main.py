@@ -1,8 +1,11 @@
 from os import environ, getcwd, listdir
 from traceback import print_tb
+from typing import Any, List, Mapping, Optional
 
-from discord import Activity, ActivityType, Status, Intents, Interaction, Guild, utils, TextChannel
-from discord.ext.commands import Bot, when_mentioned_or
+from discord import Activity, ActivityType, Status, Intents, Embed
+from discord.ext.commands import Bot, when_mentioned_or, HelpCommand
+from discord.ext.commands.cog import Cog
+from discord.ext.commands.core import Command
 from discord.ext.tasks import loop
 
 from asyncpg.pool import Pool
@@ -16,7 +19,6 @@ load_dotenv(f"{getcwd()}/utils/.env")
 
 from utils import Default, DBGuildNotFound
 
-
 class Dynamo(Bot):
 	def __init__(self, intents: Intents) -> None:
 			self.POOL: Pool | None = None
@@ -27,7 +29,7 @@ class Dynamo(Bot):
 				status=Status.online,
 				intents=intents,
 				application_id=environ.get("app_id"),
-				description="User entertainment bot",
+				description="User entertainment bot"
 			)
 
 	
