@@ -67,7 +67,7 @@ class Christmas(Cog):
     @set_countdown_channel_command.error
     async def on_set_countdown_channel_command_error(self, inter: Interaction, error: AppCommandError):
         if isinstance(error, MissingPermissions):
-            await inter.response.send_message("You're missing ``Manage server`` permission. ❌")
+            await inter.response.send_message("You're missing ``Manage server`` permission. ❌", , ephemeral=True)
 
     # Sets christmas countdown enabled status
     @describe(status="True means enabled, otherwise False means disabled.")
@@ -97,7 +97,7 @@ class Christmas(Cog):
     @christmas_countdown_enabled_command.error
     async def christmas_countdown_enabled_command_error(self, inter: Interaction, error: AppCommandError):
         if isinstance(error, MissingPermissions):
-            await inter.response.send_message("You're missing ``Manage server`` permission. ❌")
+            await inter.response.send_message("You're missing ``Manage server`` permission. ❌", ephemeral=True)
 
     # Returns a joke
     @command(name="joke", description="Dynamo tells you a christmas themed joke.")
