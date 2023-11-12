@@ -22,7 +22,7 @@ class Tasks(Cog):
             self.christmas_countdown.start()
         
 
-    @loop(hours=1)
+    @loop(minutes=15)
     async def christmas_countdown(self) -> None:
 
         serverDH: serverDatabaseHandler = serverDatabaseHandler(self.bot.POOL)
