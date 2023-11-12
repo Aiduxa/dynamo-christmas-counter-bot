@@ -1,5 +1,5 @@
 from discord.ext.commands import Cog, Bot
-from discord.app_commands import command, describe, guild_only
+from discord.app_commands import command, describe, guild_only, AppCommandError, MissingPermissions
 from discord.app_commands.checks import has_permissions
 from discord.utils import format_dt
 from discord import Interaction, TextChannel, Embed, Message, Permissions
@@ -64,6 +64,11 @@ class Christmas(Cog):
 
         await inter.edit_original_response(embed=embed)
 
+    @set_countdown_channel_command.error()
+    async def on_set_countdown_channel_command_error(self, inter: Interaction, error: AppCommandError):
+        if isinstance(error, MissingPermissions):
+            await inter.response.send_message("You're missing ``Manage server`` permission. ❌")
+
     # Sets christmas countdown enabled status
     @describe(status="True means enabled, otherwise False means disabled.")
     @has_permissions(manage_guild=True)
@@ -88,6 +93,11 @@ class Christmas(Cog):
         embed.set_footer(text=Default.FOOTER, icon_url=self.bot.user.avatar.url)
 
         await inter.edit_original_response(embed=embed)
+
+    @christmas_countdown_enabled_command.error()
+    async def christmas_countdown_enabled_command_error(self, inter: Interaction, error: AppCommandError):
+        if isinstance(error, MissingPermissions):
+            await inter.response.send_message("You're missing ``Manage server`` permission. ❌")
 
     # Returns a joke
     @command(name="joke", description="Dynamo tells you a christmas themed joke.")
