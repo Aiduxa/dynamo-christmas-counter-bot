@@ -1,9 +1,8 @@
-# Welcome to the dynamo-discord-bot!
+# Welcome to the dynamo-christmas-counter-discord-bot!
 
 ## Features
 
-- Data privacy and security
-- Open-source
+...
 
 ## Getting Started
 
