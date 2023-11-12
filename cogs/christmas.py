@@ -64,7 +64,7 @@ class Christmas(Cog):
 
         await inter.edit_original_response(embed=embed)
 
-    @set_countdown_channel_command.error()
+    @set_countdown_channel_command.error
     async def on_set_countdown_channel_command_error(self, inter: Interaction, error: AppCommandError):
         if isinstance(error, MissingPermissions):
             await inter.response.send_message("You're missing ``Manage server`` permission. ❌")
@@ -94,7 +94,7 @@ class Christmas(Cog):
 
         await inter.edit_original_response(embed=embed)
 
-    @christmas_countdown_enabled_command.error()
+    @christmas_countdown_enabled_command.error
     async def christmas_countdown_enabled_command_error(self, inter: Interaction, error: AppCommandError):
         if isinstance(error, MissingPermissions):
             await inter.response.send_message("You're missing ``Manage server`` permission. ❌")
