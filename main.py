@@ -21,6 +21,7 @@ from utils import Default, DBGuildNotFound
 class Dynamo(Bot):
 	def __init__(self, intents: Intents) -> None:
 			self.POOL: Pool | None = None
+			self.trivia_status: dict = {}
 
 			super().__init__(
 				command_prefix=when_mentioned_or(Default.PREFIX),
@@ -106,7 +107,6 @@ intents: Intents = Intents.default()
 intents.members = True
 intents.messages = True
 intents.guilds = True
-intents.message_content = True
 
 bot = Dynamo(intents)
 
