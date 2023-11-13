@@ -1,4 +1,4 @@
-__all__ = ["userDatabaseHandler", "serverDatabaseHandler"]
+__all__ = ["userDatabaseHandler", "serverDatabaseHandler", "petsDatabaseHandler"]
 
 from asyncpg.pool import Pool
 from asyncpg import Record
@@ -9,7 +9,7 @@ from dacite import from_dict
 
 from .errors import DBGuildNotFound, DBUserNotFound
 from .default import Default
-from .objects import User, Server
+from .objects import User, Server, Pet
 
 class Database:
 
@@ -52,12 +52,9 @@ class userDatabaseHandler(Database):
 	async def create(self, user_id: int) -> None:
 		await self.execute("INSERT INTO users (id) VALUES ($1)", user_id)
 
-	async def get(self, user_id: int) -> User:
+	async def get(self, user_id: int) -> User | None:
 		data: Record = await self.fetchrow("SELECT * FROM users WHERE id = $1", user_id)
-		if not data:
-			await self.create(user_id=user_id)
-			data: Record = await self.fetchrow("SELECT * FROM users WHERE id = $1", user_id)
-		return from_dict(User, dict(data))
+		return from_dict(User, dict(data)) if data else None
 
 	async def delete(self, user_id: int) -> None:
 		await self.execute("DELETE FROM users WHERE id = 1")
@@ -98,5 +95,24 @@ class serverDatabaseHandler(Database):
 	
 	async def update(self, server_id: int, column: str, new_value: str | int | float | bool | None) -> Server:
 		await self.execute(f"UPDATE servers SET {column} = $2 WHERE id = $1", server_id, new_value)
+		
+class petsDatabaseHandler(Database): 
+
+	def __init__(self, pool: Pool) -> None:
+		self.pool: Pool = pool
+		super().__init__(pool=pool)
+
+	async def create(self, owner_id: int) -> None:
+		await self.execute("INSERT INTO pets (owner_id, last_fed, last_interaction) VALUES ($1, $2, $2)", owner_id, time())
+
+	async def get(self, owner_id: int) -> Pet | None:
+		data: Record = await self.fetchrow("SELECT * FROM pets WHERE owner_id = $1", owner_id)
+		return from_dict(Pet, dict(data)) if data else None
+
+	async def delete(self, owner_id: int) -> None:
+		await self.execute("DELETE FROM pets WHERE owner_id = $1", owner_id)
+	
+	async def update(self, owner_id: int, column: str, new_value: str | int | float | bool | None) -> Pet:
+		await self.execute(f"UPDATE pets SET {column} = $2 WHERE owner_id = $1", owner_id, new_value)
 		
 	

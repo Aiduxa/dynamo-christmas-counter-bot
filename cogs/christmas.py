@@ -164,6 +164,8 @@ class Christmas(Cog):
 
         userDH: userDatabaseHandler = userDatabaseHandler(self.bot.POOL)
 
+        await userDH.get(inter.user.id)
+
         db_leaderboard: list[User] = await userDH.get_trivia_leaderboard()
 
         user: User = await userDH.get_trivia_ranking(inter.user.id)

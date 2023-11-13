@@ -1,4 +1,4 @@
-__all__ = ['Color', 'Default', 'Emoji']
+__all__ = ['Color', 'Default', 'Emoji', "Variables"]
 
 
 from datetime import datetime
@@ -6,6 +6,7 @@ from datetime import datetime
 from dataclasses import dataclass, field
 
 from discord import Object as D_Object
+from random import randint
 
 
 @dataclass
@@ -27,3 +28,10 @@ class Emoji:
 	SUPER_ACTIVE: str = "<:super_active:1062614609028198410>"
 	ACTIVE: str = "<:active:1062614628909187143>"
 	ONLINE: str = "<:online:1062614646038732851>"
+
+@dataclass
+class Variables:
+	CURRENCY: str = "$"
+	PET_FIND_COOLDOWN: float = 86400
+	PET_FIND_RETURN: tuple = (250, 1000) 
+	PET_FEED_COST: int = 1000
