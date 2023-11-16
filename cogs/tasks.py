@@ -1,6 +1,7 @@
 from discord.ext.commands import Cog, Bot
 from discord.ext.tasks import loop
 from discord import TextChannel, Message, Embed, Guild
+from discord.errors import NotFound
 
 from utils import serverDatabaseHandler, Server, Color, Default
 
@@ -18,8 +19,8 @@ class Tasks(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot: Bot = bot
-        if self.bot.user.id == 1060253596672860160:
-            self.christmas_countdown.start()
+        
+        self.christmas_countdown.start()
         
 
     @loop(minutes=15)
@@ -31,15 +32,18 @@ class Tasks(Cog):
 
         for server in servers:
 
+            print(1)
+
             # Checks if bot is still in guild, if not it deletes it from the database
-            if not self.bot.get_guild(server.id):
-                await serverDH.delete(server.id)
+            try:
+                guild: Guild = await self.bot.fetch_guild(server.id)
+            except NotFound:
                 continue
+
             
             if not server.christmas_countdown_enabled:
                 continue
                 
-            guild: Guild = self.bot.get_guild(server.id)
 
             # If channel was not set, it the loop continues
             if not await guild.fetch_channel(server.christmas_countdown_channel_id):

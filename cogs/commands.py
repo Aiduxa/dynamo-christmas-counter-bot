@@ -28,7 +28,7 @@ class Commands(Cog):
 
         embed: Embed = Embed(
             title="Dynamo's status",
-            description=f"I'm running on **Discord.py** with Python v{python_version()}\n",
+            description=f"I'm running on **Discord.py** with Python v**{python_version()}**\n",
             color=Default.COLOR
         )
         embed.add_field(
