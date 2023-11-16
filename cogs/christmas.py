@@ -29,11 +29,11 @@ class Christmas(Cog):
 
         channel_permissions: Permissions = channel.permissions_for(inter.guild.get_member(self.bot.user.id))
 
-        if not channel_permissions.send_messages or not channel_permissions.manage_messages:
+        if not channel_permissions.send_messages:
 
             embed = Embed(
                 title="❌ Error",
-                description=f"- I do not have enough permissions in {channel.mention}. I need ``Manage messages`` and ``Send messages`` permissions.",
+                description=f"- I do not have enough permissions in {channel.mention}. I need ``Send messages`` permissions.",
                 color=Color.RED
             )
             embed.set_footer(text=Default.FOOTER)
@@ -50,8 +50,8 @@ class Christmas(Cog):
         await serverDH.update(inter.guild.id, "christmas_countdown_channel_id", channel.id)
 
         msg: Message = await channel.send("This message will be updated. Stay tuned.")
-        
-        await msg.pin(reason="Dynamo's daily counter until christmas")
+        if channel_permissions.manage_messages:
+            await msg.pin(reason="Dynamo's daily counter until christmas")
 
         await serverDH.update(inter.guild.id, "christmas_countdown_message_id", msg.id)
 

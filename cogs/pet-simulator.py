@@ -43,9 +43,12 @@ class PetSimulator(Cog):
 
                         await petsDH.update(inter.user.id, "hunger", pet.hunger)
                 else:
-
-                    pet.health = pet.health - int(float(pet.last_fed - time()) / 86400)
-                    await petsDH.update(inter.user.id, "health", pet.health)
+                    if pet.health > 0:
+                        pet.health = min(pet.health - int(float(pet.last_fed - time()) / 86400), 0)
+                        await petsDH.update(inter.user.id, "health", pet.health)
+                    else:
+                        
+                        await petsDH.delete(inter.user.id)
 
             pet.last_interaction = time()
 
