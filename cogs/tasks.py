@@ -32,14 +32,14 @@ class Tasks(Cog):
         for server in servers:
 
             # Checks if bot is still in guild, if not it deletes it from the database
-            if not await self.bot.fetch_guild(server.id):
+            if not self.bot.get_guild(server.id):
                 await serverDH.delete(server.id)
                 continue
             
             if not server.christmas_countdown_enabled:
                 continue
                 
-            guild: Guild = await self.bot.fetch_guild(server.id)
+            guild: Guild = self.bot.get_guild(server.id)
 
             # If channel was not set, it the loop continues
             if not await guild.fetch_channel(server.christmas_countdown_channel_id):

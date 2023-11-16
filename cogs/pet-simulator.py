@@ -31,20 +31,25 @@ class PetSimulator(Cog):
 
         if pet:
 
-            pet_age_days: int = int(float(pet.created_at.timestamp() - time()) / 86400)
+            
 
-            if int(pet.last_interaction - time()) > 86400:
+            pet_age_days: int = int(float(time() - pet.created_at.timestamp()) / 86400)
+
+            
+
+            print("last_inter", int(time() - pet.last_interaction))
+            if int(time() - pet.last_interaction) > 86400:
                 
                 if not pet.hunger == 100:
                     
-                    pet.hunger = min(pet.hunger + int(float(pet.last_fed - time()) / 86400) * randint(5, 10), 100)
+                    pet.hunger = min(pet.hunger + int(float(time() - pet.last_fed) / 86400) * randint(5, 10), 100)
 
                     if pet.hunger < 100:
 
                         await petsDH.update(inter.user.id, "hunger", pet.hunger)
                 else:
                     if pet.health > 0:
-                        pet.health = min(pet.health - int(float(pet.last_fed - time()) / 86400), 0)
+                        pet.health = min(pet.health - int(float(time() - pet.last_fed) / 86400), 0)
                         await petsDH.update(inter.user.id, "health", pet.health)
                     else:
                         

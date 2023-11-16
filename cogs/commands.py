@@ -9,6 +9,7 @@ from utils import serverDatabaseHandler, Default, Color, Server, database, Chris
 from time import time
 from datetime import datetime
 from asyncio import TimeoutError
+from platform import python_version, system, release, version
 
 from ast import literal_eval
 
@@ -27,8 +28,12 @@ class Commands(Cog):
 
         embed: Embed = Embed(
             title="Dynamo's status",
-            description="Here you can find Dynamo's status",
+            description=f"I'm running on **Discord.py** with Python v{python_version()}\n",
             color=Default.COLOR
+        )
+        embed.add_field(
+            name="Statistics",
+            value=f"{'``{:,}``'.format(len(self.bot.guilds))} servers with approximately {'``{:,}``'.format(len(self.bot.users))} members"
         )
         embed.add_field(
             name="Latency (Dynamo -> Discord)",

@@ -70,7 +70,7 @@ class TriviaView(View):
 
 def gen_pet_embed(pet: Pet) -> Embed:
     
-        pet_age_days: int = int(float(pet.created_at.timestamp() - time()) / 86400)
+        pet_age_days: int = int(float(time() - pet.created_at.timestamp()) / 86400)
 
         pet_searching: str = ''
         if pet.searching:
