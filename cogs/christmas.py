@@ -177,9 +177,9 @@ class Christmas(Cog):
         for i in range(0, min(11, len(db_leaderboard))):
             user_db = db_leaderboard[i]
 
-            user_discord = self.bot.get_user(user.id)
+            user_discord = await self.bot.fetch_user(user_db.id)
 
-            leaderboard += f"- {medals[i] if i <= 3 else ''} ``#{user_db.trivia_ranking}`` | {user_discord.global_name} with ``{'{:,}'.format(user_db.trivia_points)}`` points.\n"
+            leaderboard += f"- {medals[i] if i <= 3 else ''} ``#{user_db.trivia_ranking}`` | {user_discord.display_name} with ``{'{:,}'.format(user_db.trivia_points)}`` points.\n"
 
         embed: Embed = Embed(
             title="🎅 Christmas trivia leaderboard",

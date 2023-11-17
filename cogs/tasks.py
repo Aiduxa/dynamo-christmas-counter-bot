@@ -32,8 +32,6 @@ class Tasks(Cog):
 
         for server in servers:
 
-            print(1)
-
             # Checks if bot is still in guild, if not it deletes it from the database
             try:
                 guild: Guild = await self.bot.fetch_guild(server.id)

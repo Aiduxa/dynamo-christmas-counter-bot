@@ -23,7 +23,7 @@ class User:
     trivia_points: int
     trivia_ranking: int | None
 
-    balance: int
+    balance: int | None
 
     created_at: datetime
 
