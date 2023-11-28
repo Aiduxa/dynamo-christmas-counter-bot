@@ -4,14 +4,21 @@ from discord.app_commands.checks import has_permissions
 from discord.utils import format_dt
 from discord import Interaction, TextChannel, Embed, Message, Permissions
 from requests import get, Response
+from aiohttp import ClientSession
 
-from utils import serverDatabaseHandler, Default, Color, Server, ChristmasTriviaJson, userDatabaseHandler, User, TriviaView
+from utils import serverDatabaseHandler, Default, Color, Server, ChristmasTriviaJson, userDatabaseHandler, User, TriviaView, Emoji
+from json import loads
 from time import time
 from datetime import datetime
 from asyncio import sleep
 from random import random
 
 from ast import literal_eval
+
+def create_progress_bar(percentage, length=14):
+    progress = int(length * percentage / 100)
+    bar = str (Emoji.PROGRESS_BAR_START_FULL if progress > 0 else Emoji.PROGRESS_BAR_START_EMPTY) + Emoji.PROGRESS_BAR_FULL * progress + Emoji.PROGRESS_BAR_EMPTY * (length - progress) + str(Emoji.PROGRESS_BAR_END_EMPTY if percentage <= 99 else Emoji.PROGRESS_BAR_END_FULL)
+    return bar
 
 class Christmas(Cog):
 
@@ -191,6 +198,61 @@ class Christmas(Cog):
         )
 
         await inter.edit_original_response(embed=embed)
+
+    @command(name="christmas", description="Christmas countdown")
+    async def countdown_use_command(self, inter: Interaction):
+        
+        await inter.response.defer(ephemeral=True)
+
+        async with ClientSession() as sesh:
+                async with sesh.get("https://christmascountdown.live/api/timeleft/total") as resp:
+                    # Gets the time left until christmas in dict
+                    timeleft: dict = loads(str(await resp.text()))
+
+                async with sesh.get("https://christmascountdown.live/api/percentage") as resp:
+                    # Gets the percentage of time left until christmas in float
+                    percentage: float = float(await resp.text())
+
+                async with sesh.get("https://christmascountdown.live/api/is-tomorrow") as resp:
+                    # Gets a bool that indicates if it's christmas eve
+                    christmas_eve: bool = loads(await resp.text())
+
+                async with sesh.get("https://christmascountdown.live/api/is-today") as resp:
+                    # Gets a bool that indicates if it's christmas
+                    christmas: bool = loads(await resp.text())
+
+        line: str = "🟥🟩" * 6
+        time: str  = "# Merry Christmas! 🎅🎄"
+        numbers: list = [Emoji.zero, Emoji.one, Emoji.two, Emoji.three, Emoji.four, Emoji.five, Emoji.six, Emoji.seven, Emoji.eight, Emoji.nine]
+
+        if not christmas:
+            countdown: str = ""
+
+            for unit in ["day", "hour", "minute"]:
+                u: int = timeleft.get(unit + "s")
+
+                countdown += f"{''.join([numbers[int(number)] for number in list(str(u))])} **{unit}{'s' if u > 1 or u == 0 else ''}** "
+
+            time = " ".join(["### 🕒", countdown])
+
+            if christmas_eve:
+                time = f"# Merry Christmas Eve! ⭐🎄\n{time}"
+
+        percentage_progress: str = f"- {round(percentage)}% **/ 100%**"
+
+        progress: str = "\n".join([f"### ⭐ Progress", percentage_progress, create_progress_bar(percentage)])
+
+        description: str = "\n".join(["## ", line, time, progress, "## ", line])
+
+        # Big ass embed
+        embed: Embed = Embed(
+            title="🎅 Countdown until christmas...",
+            description=description,
+            color=Color.GREEN
+        )
+        embed.set_footer(text=Default.FOOTER)
+
+        await inter.edit_original_response(content=None, embed=embed)
 
 async def setup(bot: Bot):
     await bot.add_cog(Christmas(bot))

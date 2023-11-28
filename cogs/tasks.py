@@ -3,7 +3,7 @@ from discord.ext.tasks import loop
 from discord import TextChannel, Message, Embed, Guild
 from discord.errors import NotFound
 
-from utils import serverDatabaseHandler, Server, Color, Default
+from utils import serverDatabaseHandler, Server, Color, Default, Emoji
 
 from aiohttp import ClientSession
 from json import loads
@@ -11,7 +11,7 @@ from traceback import print_tb
 
 def create_progress_bar(percentage, length=14):
     progress = int(length * percentage / 100)
-    bar = "🟦" * progress + "⬜" * (length - progress)
+    bar = str (Emoji.PROGRESS_BAR_START_FULL if progress > 0 else Emoji.PROGRESS_BAR_START_EMPTY) + Emoji.PROGRESS_BAR_FULL * progress + Emoji.PROGRESS_BAR_EMPTY * (length - progress) + str(Emoji.PROGRESS_BAR_END_EMPTY if percentage <= 99 else Emoji.PROGRESS_BAR_END_FULL)
     return bar
 
 
@@ -19,8 +19,8 @@ class Tasks(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot: Bot = bot
-        
-        self.christmas_countdown.start()
+        if self.bot.user.id == 1060253596672860160:
+            self.christmas_countdown.start()
         
 
     @loop(minutes=15)
@@ -82,14 +82,15 @@ class Tasks(Cog):
 
             line: str = "🟥🟩" * 6
             time: str  = "# Merry Christmas! 🎅🎄"
+            numbers: list = [Emoji.zero, Emoji.one, Emoji.two, Emoji.three, Emoji.four, Emoji.five, Emoji.six, Emoji.seven, Emoji.eight, Emoji.nine]
 
             if not christmas:
                 countdown: str = ""
 
-                for unit in ["day", "hour", "minute", "second"]:
+                for unit in ["day", "hour", "minute"]:
                     u: int = timeleft.get(unit + "s")
 
-                    countdown += f"`{u}` **{unit}{'s' if u > 1 else ''}** "
+                    countdown += f"{''.join([numbers[int(number)] for number in list(str(u))])} **{unit}{'s' if u > 1 or u == 0 else ''}** "
 
                 time = " ".join(["### 🕒", countdown])
 
@@ -108,7 +109,7 @@ class Tasks(Cog):
                 description=description,
                 color=Color.GREEN
             )
-            embed.set_footer(text=Default.FOOTER, icon_url=self.bot.user.avatar.url)
+            embed.set_footer(text=Default.FOOTER)
 
             await message.edit(content=None, embed=embed)
 
