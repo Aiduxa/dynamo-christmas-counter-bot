@@ -25,10 +25,10 @@ class User:
 
     balance: int | None
 
-    snowball_hits: int
-    snowball_throws: int
-    snowball_dodges: int
-    snowball_struck: int
+    snowball_hits: int | None
+    snowball_throws: int | None
+    snowball_dodges: int | None
+    snowball_struck: int | None
 
     created_at: datetime
 
