@@ -18,6 +18,14 @@ load_dotenv(f"{getcwd()}/utils/.env")
 
 from utils import Default, DBGuildNotFound
 
+def format_number(number: int) -> str:
+	if number >= 1_000_000:
+		return f'{number / 1_000_000:.2f}m'
+	elif number >= 1_000:
+		return f'{number / 1_000:.2f}k'
+	else:
+		return str(number)
+
 class Dynamo(Bot):
 	def __init__(self, intents: Intents) -> None:
 			self.POOL: Pool | None = None
@@ -36,7 +44,7 @@ class Dynamo(Bot):
 	
 	@loop(minutes=30.0)
 	async def continous_handler(self) -> None:
-		await self.change_presence(activity=Activity(name=f"{'{:,}'.format(len(self.users))} members | /help", type=ActivityType.watching))
+		await self.change_presence(activity=Activity(name=f"{format_number(len(self.users))} members | /help", type=ActivityType.watching))
 
 	@continous_handler.before_loop
 	async def before_continous_handler(self) -> None:
