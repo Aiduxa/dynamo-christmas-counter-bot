@@ -25,6 +25,11 @@ class User:
 
     balance: int | None
 
+    snowball_hits: int
+    snowball_throws: int
+    snowball_dodges: int
+    snowball_struck: int
+
     created_at: datetime
 
 @dataclass
