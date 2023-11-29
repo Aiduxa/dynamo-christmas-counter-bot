@@ -20,9 +20,9 @@ from utils import Default, DBGuildNotFound
 
 def format_number(number: int) -> str:
 	if number >= 1_000_000:
-		return f'{number / 1_000_000:.2f}m'
+		return f'{number / 1_000_000:.1f}m'
 	elif number >= 1_000:
-		return f'{number / 1_000:.2f}k'
+		return f'{number / 1_000:.1f}k'
 	else:
 		return str(number)
 
@@ -44,7 +44,7 @@ class Dynamo(Bot):
 	
 	@loop(minutes=30.0)
 	async def continous_handler(self) -> None:
-		await self.change_presence(activity=Activity(name=f"{format_number(len(self.users))} members | /help", type=ActivityType.watching))
+		await self.change_presence(activity=Activity(name=f"{format_number(len(self.users))} users | /help", type=ActivityType.watching))
 
 	@continous_handler.before_loop
 	async def before_continous_handler(self) -> None:
