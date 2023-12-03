@@ -43,10 +43,7 @@ class PetSimulator(Cog):
                 if not pet.hunger == 100:
                     
                     pet.hunger = min(pet.hunger + int(float(time() - pet.last_fed) / 86400) * randint(5, 10), 100)
-
-                    if pet.hunger < 100:
-
-                        await petsDH.update(inter.user.id, "hunger", pet.hunger)
+                    await petsDH.update(inter.user.id, "hunger", pet.hunger)
                 else:
                     if pet.health > 0:
                         pet.health = min(pet.health - int(float(time() - pet.last_fed) / 86400), 0)
